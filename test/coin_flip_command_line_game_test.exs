@@ -7,8 +7,7 @@ defmodule CoinFlipCommandLineGameTest do
   describe "pressing a key" do
     test "adds to the user buffer" do
       screen = ScreenServer
-      game = Game.new(screen)
-      screen.start_link(CoinFlipCommandLineGame.FakePrinter, game)
+      screen.start_link(CoinFlipCommandLineGame.FakePrinter, self())
       game = Game.new(screen)
 
       :ok = Game.key_pressed(game, ?c)

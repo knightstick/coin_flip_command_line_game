@@ -13,7 +13,7 @@ defmodule CoinFlipCommandLineGame.Game do
     screen = Keyword.get(options, :screen, @default_screen)
 
     game = Game.new(screen)
-    screen.start_link(game)
+    screen.start_link(self())
 
     play_game(game)
   end
@@ -56,8 +56,3 @@ defmodule CoinFlipCommandLineGame.Game do
     screen.render()
   end
 end
-
-      # {:ex_ncurses, :key, key} ->
-      #   Logger.debug(inspect(key, label: "Key pressed: "))
-      #   handle_char(to_string([key]), printer)
-      #   loop(game)

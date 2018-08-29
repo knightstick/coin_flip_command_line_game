@@ -9,7 +9,7 @@ defmodule CoinFlipCommandLineGameScreenServerTest do
     printer.init()
 
     game = Game.new(ScreenServer)
-    ScreenServer.start_link(printer, game)
+    ScreenServer.start_link(printer, self())
 
     on_exit fn ->
       printer.teardown()
@@ -30,16 +30,16 @@ defmodule CoinFlipCommandLineGameScreenServerTest do
     end
   end
 
-  test "get_screen", %{printer: printer, game: game} do
+  test "get_screen", %{printer: printer} do
     %Screen{} = screen = ScreenServer.get_screen()
 
-    assert screen == Screen.new(printer, game)
+    assert screen == Screen.new(printer)
   end
 
-  test "render", %{printer: printer, game: game} do
+  test "render", %{printer: printer} do
     ScreenServer.render()
 
-    assert printer.printings == [Screen.new(printer, game)]
+    assert printer.printings == [Screen.new(printer)]
   end
 end
 

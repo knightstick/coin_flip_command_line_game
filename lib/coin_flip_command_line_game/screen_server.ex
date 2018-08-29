@@ -3,15 +3,15 @@ defmodule CoinFlipCommandLineGame.ScreenServer do
 
   use GenServer
 
-  alias CoinFlipCommandLineGame.{ Game, Printer, Screen }
+  alias CoinFlipCommandLineGame.{ Printer, Screen }
 
-  def start_link(printer \\ Printer, %Game{} = game) do
-    GenServer.start_link(__MODULE__, Screen.new(printer, game), name: __MODULE__)
+  def start_link(printer \\ Printer, game_pid) do
+    GenServer.start_link(__MODULE__, %{screen: Screen.new(printer), game_pid: game_pid}, name: __MODULE__)
   end
 
-  def init(screen) do
-    screen.printer.init()
-    {:ok, screen}
+  def init(state) do
+    state.screen.printer.init()
+    {:ok, state}
   end
 
   def get_screen() do
@@ -32,22 +32,24 @@ defmodule CoinFlipCommandLineGame.ScreenServer do
     screen.printer.print_full_screen(screen)
   end
 
-  def handle_call(:get_user_buffer, _from, %Screen{user_buffer: buffer} = state) do
+  def handle_call(:get_user_buffer, _from, %{screen: %Screen{user_buffer: buffer}} = state) do
     {:reply, buffer, state}
   end
 
-  def handle_call(:get_screen, _from, %Screen{} = state) do
-    {:reply, state, state}
+  def handle_call(:get_screen, _from, %{screen: %Screen{} = screen} = state) do
+    {:reply, screen, state}
   end
 
-  def handle_cast({:append_to_user_buffer, string}, %Screen{} = state) do
-    new_state = Screen.user_buffer_append(state, string)
+  def handle_cast({:append_to_user_buffer, string}, %{screen: %Screen{} = screen} = state) do
+    new_screen = Screen.user_buffer_append(screen, string)
+    new_state = Map.put(state, :screen, new_screen)
 
     {:noreply, new_state}
   end
 
   def handle_info({:ex_ncurses, :key, key}, state) do
-    CoinFlipCommandLineGame.Game.key_pressed(state.game, key)
+    send(state.game_pid, {:key_pressed, key})
+
     {:noreply, state}
   end
 
