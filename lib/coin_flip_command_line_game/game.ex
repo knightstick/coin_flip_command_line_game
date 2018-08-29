@@ -1,16 +1,60 @@
 defmodule CoinFlipCommandLineGame.Game do
-  alias CoinFlipCommandLineGame.Printer
+  alias __MODULE__
+  require Logger
 
-  @default_printer Printer
-  @wait_time 5000
+  defstruct printer: nil, screen: nil
+
+  @default_printer CoinFlipCommandLineGame.Printer
+  @default_screen CoinFlipCommandLineGame.ScreenServer
+  def new(printer, screen) do
+    %Game{printer: printer, screen: screen}
+  end
+
   def run(options \\ []) do
     printer = Keyword.get(options, :printer, @default_printer)
-    timer = Keyword.get(options, :timer, :timer)
+    screen = Keyword.get(options, :screen, @default_screen)
 
     printer.init()
-    printer.print_full_screen("> \n\nCoinFlipCommandLineGame\n")
+    screen.start_link()
 
-    timer.sleep(@wait_time)
-    printer.teardown()
+    play_game(Game.new(printer, screen))
+  end
+
+  def play_game(%Game{} = game) do
+    Logger.debug("Starting game")
+
+    welcome(game.printer, game.screen)
+    loop(game)
+
+    teardown(game)
+  end
+
+  def teardown(%Game{}) do
+    Logger.debug("Tearing down")
+  end
+
+
+  defp loop(%Game{} = game) do
+    receive do
+      {:key_pressed, key} ->
+        Logger.debug(inspect(key), label: "Key pressed: ")
+        Logger.debug(inspect(game), label: "Game: ")
+        loop(game)
+    after
+      2000 -> nil
+    end
+  end
+
+  defp welcome(printer, screen) do
+    print_screen(screen, printer)
+  end
+
+  defp print_screen(screen, printer) do
+    printer.print_full_screen(screen.get_screen())
   end
 end
+
+      # {:ex_ncurses, :key, key} ->
+      #   Logger.debug(inspect(key, label: "Key pressed: "))
+      #   handle_char(to_string([key]), printer)
+      #   loop(game)

@@ -7,7 +7,7 @@ defmodule CoinFlipCommandLineGame do
 
   @doc """
   """
-  def main(_) do
+  def main(_ \\ nil) do
     Game.run()
   end
 end
