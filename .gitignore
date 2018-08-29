@@ -23,3 +23,5 @@ erl_crash.dump
 coin_flip_command_line_game-*.tar
 
 /.elixir_ls
+
+*.log
