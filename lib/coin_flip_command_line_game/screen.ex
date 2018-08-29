@@ -6,10 +6,10 @@ defmodule CoinFlipCommandLineGame.Screen do
 
   @default_prompt "> "
   def new(printer \\ Printer), do: %Screen{
-    user_buffer: new_buffer(),
     display: new_display(),
+    printer: printer,
     prompt: @default_prompt,
-    printer: printer
+    user_buffer: new_buffer(),
   }
 
   def user_buffer_append(%Screen{user_buffer: buffer} = screen, string) do

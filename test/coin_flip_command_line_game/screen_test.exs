@@ -2,7 +2,7 @@ defmodule CoinFLipCommandLineGameScreenTest do
   use ExUnit.Case
   doctest CoinFlipCommandLineGame.Screen
 
-  alias CoinFlipCommandLineGame.Screen
+  alias CoinFlipCommandLineGame.{ Game, Screen }
 
   describe "user_buffer" do
     test "can add chars to a new user_buffer" do
@@ -24,7 +24,7 @@ defmodule CoinFLipCommandLineGameScreenTest do
 
   describe "prompt" do
     test "has a default prompt" do
-      %Screen{prompt: prompt} = Screen.new()
+      %Screen{prompt: prompt} = Screen.new(Game.new(ScreenServer))
 
       assert prompt == "> "
     end
