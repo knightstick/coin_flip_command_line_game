@@ -12,9 +12,10 @@ defmodule CoinFlipCommandLineGame.Game do
   def run(options \\ []) do
     screen = Keyword.get(options, :screen, @default_screen)
 
-    screen.start_link()
+    game = Game.new(screen)
+    screen.start_link(game)
 
-    play_game(Game.new(screen))
+    play_game(game)
   end
 
   def play_game(%Game{} = game) do

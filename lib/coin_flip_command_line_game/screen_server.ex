@@ -1,10 +1,12 @@
 defmodule CoinFlipCommandLineGame.ScreenServer do
+  require Logger
+
   use GenServer
 
-  alias CoinFlipCommandLineGame.{ Printer, Screen }
+  alias CoinFlipCommandLineGame.{ Game, Printer, Screen }
 
-  def start_link(printer \\ Printer) do
-    GenServer.start_link(__MODULE__, Screen.new(printer), name: __MODULE__)
+  def start_link(printer \\ Printer, %Game{} = game) do
+    GenServer.start_link(__MODULE__, Screen.new(printer, game), name: __MODULE__)
   end
 
   def init(screen) do
@@ -42,5 +44,16 @@ defmodule CoinFlipCommandLineGame.ScreenServer do
     new_state = Screen.user_buffer_append(state, string)
 
     {:noreply, new_state}
+  end
+
+  def handle_info({:ex_ncurses, :key, key}, state) do
+    CoinFlipCommandLineGame.Game.key_pressed(state.game, key)
+    {:noreply, state}
+  end
+
+  def handle_info(msg, state) do
+    Logger.info(inspect(msg), label: "Unexpected info received: ")
+
+    {:noreply, state}
   end
 end
