@@ -4,26 +4,23 @@ defmodule CoinFlipCommandLineGame.Game do
 
   defstruct printer: nil, screen: nil
 
-  @default_printer CoinFlipCommandLineGame.Printer
   @default_screen CoinFlipCommandLineGame.ScreenServer
-  def new(printer, screen) do
-    %Game{printer: printer, screen: screen}
+  def new(screen) do
+    %Game{screen: screen}
   end
 
   def run(options \\ []) do
-    printer = Keyword.get(options, :printer, @default_printer)
     screen = Keyword.get(options, :screen, @default_screen)
 
-    printer.init()
     screen.start_link()
 
-    play_game(Game.new(printer, screen))
+    play_game(Game.new(screen))
   end
 
   def play_game(%Game{} = game) do
     Logger.debug("Starting game")
 
-    welcome(game.printer, game.screen)
+    welcome(game.screen)
     loop(game)
 
     teardown(game)
@@ -50,12 +47,12 @@ defmodule CoinFlipCommandLineGame.Game do
     end
   end
 
-  defp welcome(printer, screen) do
-    print_screen(screen, printer)
+  defp welcome(screen) do
+    print_screen(screen)
   end
 
-  defp print_screen(screen, printer) do
-    printer.print_full_screen(screen.get_screen())
+  defp print_screen(screen) do
+    screen.render()
   end
 end
 

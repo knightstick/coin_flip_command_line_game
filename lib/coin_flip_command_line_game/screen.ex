@@ -1,13 +1,15 @@
 defmodule CoinFlipCommandLineGame.Screen do
-  defstruct user_buffer: "", display: "", prompt: ""
+  defstruct user_buffer: "", display: "", prompt: "", printer: nil
 
   alias __MODULE__
+  alias CoinFlipCommandLineGame.Printer
 
   @default_prompt "> "
-  def new(), do: %Screen{
+  def new(printer \\ Printer), do: %Screen{
     user_buffer: new_buffer(),
     display: new_display(),
-    prompt: @default_prompt
+    prompt: @default_prompt,
+    printer: printer
   }
 
   def user_buffer_append(%Screen{user_buffer: buffer} = screen, string) do
