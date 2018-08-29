@@ -29,6 +29,10 @@ defmodule CoinFlipCommandLineGame.Game do
     teardown(game)
   end
 
+  def key_pressed(%Game{} = game, key) do
+    game.screen.append_to_user_buffer(to_string([key]))
+  end
+
   def teardown(%Game{}) do
     Logger.debug("Tearing down")
   end
@@ -39,6 +43,7 @@ defmodule CoinFlipCommandLineGame.Game do
       {:key_pressed, key} ->
         Logger.debug(inspect(key), label: "Key pressed: ")
         Logger.debug(inspect(game), label: "Game: ")
+        key_pressed(game, key)
         loop(game)
     after
       2000 -> nil
