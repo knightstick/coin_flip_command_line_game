@@ -21,7 +21,3 @@ erl_crash.dump
 
 # Ignore package tarball (built via "mix hex.build").
 coin_flip_command_line_game-*.tar
-
-/.elixir_ls
-
-*.log
