@@ -17,7 +17,9 @@ defmodule CoinFlipCommandLineGame.Printer do
     ExNcurses.endwin()
   end
 
-  def print_full_screen(%Screen{user_buffer: user_buffer, display: display, prompt: prompt} = screen) do
+  def print_full_screen(
+        %Screen{user_buffer: user_buffer, display: display, prompt: prompt} = screen
+      ) do
     Logger.debug("Printing full screen: " <> inspect(screen))
 
     ExNcurses.clear()
