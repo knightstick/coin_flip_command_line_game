@@ -2,7 +2,7 @@ defmodule CoinFlipCommandLineGameScreenServerTest do
   use ExUnit.Case
   doctest CoinFlipCommandLineGame.ScreenServer
 
-  alias CoinFlipCommandLineGame.{ Game, Screen, ScreenServer }
+  alias CoinFlipCommandLineGame.{Game, Screen, ScreenServer}
 
   setup do
     printer = CoinFlipCommandLineGame.FakePrinter
@@ -11,9 +11,9 @@ defmodule CoinFlipCommandLineGameScreenServerTest do
     game = Game.new(ScreenServer)
     ScreenServer.start_link(printer, self())
 
-    on_exit fn ->
+    on_exit(fn ->
       printer.teardown()
-    end
+    end)
 
     [printer: printer, game: game]
   end
@@ -50,9 +50,13 @@ defmodule CoinFlipCommandLineGame.FakePrinter do
   def teardown(), do: Agent.stop(__MODULE__, :normal, 5000)
 
   def print_full_screen(%Screen{} = screen) do
-    Agent.update(__MODULE__, fn printings ->
-      [screen | printings]
-    end, 5000)
+    Agent.update(
+      __MODULE__,
+      fn printings ->
+        [screen | printings]
+      end,
+      5000
+    )
   end
 
   def printings() do

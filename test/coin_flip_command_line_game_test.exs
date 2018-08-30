@@ -2,7 +2,7 @@ defmodule CoinFlipCommandLineGameTest do
   use ExUnit.Case
   doctest CoinFlipCommandLineGame
 
-  alias CoinFlipCommandLineGame.{ Game, ScreenServer }
+  alias CoinFlipCommandLineGame.{Game, ScreenServer}
 
   describe "pressing a key" do
     test "adds to the user buffer" do

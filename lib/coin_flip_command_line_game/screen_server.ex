@@ -3,10 +3,12 @@ defmodule CoinFlipCommandLineGame.ScreenServer do
 
   use GenServer
 
-  alias CoinFlipCommandLineGame.{ Printer, Screen }
+  alias CoinFlipCommandLineGame.{Printer, Screen}
 
   def start_link(printer \\ Printer, game_pid) do
-    GenServer.start_link(__MODULE__, %{screen: Screen.new(printer), game_pid: game_pid}, name: __MODULE__)
+    GenServer.start_link(__MODULE__, %{screen: Screen.new(printer), game_pid: game_pid},
+      name: __MODULE__
+    )
   end
 
   def init(state) do

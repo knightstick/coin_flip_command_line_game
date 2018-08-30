@@ -35,7 +35,6 @@ defmodule CoinFlipCommandLineGame.Game do
     Logger.debug("Tearing down")
   end
 
-
   defp loop(%Game{} = game) do
     receive do
       {:key_pressed, key} ->
