@@ -3,10 +3,10 @@ defmodule CoinFlipCommandLineGame.ScreenServer do
 
   use GenServer
 
-  alias CoinFlipCommandLineGame.{Printer, Screen}
+  alias CoinFlipCommandLineGame.{Game, Printer, Screen}
 
-  def start_link(printer \\ Printer, game_pid) do
-    GenServer.start_link(__MODULE__, %{screen: Screen.new(printer), game_pid: game_pid},
+  def start_link(printer \\ Printer, game_session) do
+    GenServer.start_link(__MODULE__, %{screen: Screen.new(printer), game_session: game_session},
       name: __MODULE__
     )
   end
@@ -16,47 +16,25 @@ defmodule CoinFlipCommandLineGame.ScreenServer do
     {:ok, state}
   end
 
-  def get_screen() do
-    GenServer.call(__MODULE__, :get_screen, 5000)
+  def render(%Game{} = game) do
+    GenServer.cast(__MODULE__, {:render, game})
   end
 
-  def get_user_buffer() do
-    GenServer.call(__MODULE__, :get_user_buffer, 5000)
-  end
+  def handle_cast({:render, %Game{} = game}, %{screen: %Screen{printer: printer} = screen}) do
+    new_screen = Screen.update_game(screen, game)
+    printer.print_full_screen(new_screen)
 
-  def append_to_user_buffer(string) do
-    GenServer.cast(__MODULE__, {:append_to_user_buffer, string})
-    render()
-  end
-
-  def render() do
-    screen = get_screen()
-    screen.printer.print_full_screen(screen)
-  end
-
-  def handle_call(:get_user_buffer, _from, %{screen: %Screen{user_buffer: buffer}} = state) do
-    {:reply, buffer, state}
-  end
-
-  def handle_call(:get_screen, _from, %{screen: %Screen{} = screen} = state) do
-    {:reply, screen, state}
-  end
-
-  def handle_cast({:append_to_user_buffer, string}, %{screen: %Screen{} = screen} = state) do
-    new_screen = Screen.user_buffer_append(screen, string)
-    new_state = Map.put(state, :screen, new_screen)
-
-    {:noreply, new_state}
+    {:noreply, new_screen}
   end
 
   def handle_info({:ex_ncurses, :key, key}, state) do
-    send(state.game_pid, {:key_pressed, key})
+    send(state.game_session, {:key_pressed, key})
 
     {:noreply, state}
   end
 
   def handle_info(msg, state) do
-    Logger.info(inspect(msg), label: "Unexpected info received: ")
+    Logger.info("Unexpected info received: " <> inspect(msg))
 
     {:noreply, state}
   end
