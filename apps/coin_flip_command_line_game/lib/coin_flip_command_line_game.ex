@@ -3,11 +3,11 @@ defmodule CoinFlipCommandLineGame do
   Documentation for CoinFlipCommandLineGame.
   """
 
-  alias CoinFlipCommandLineGame.Game
+  alias CoinFlipCommandLineGame.{GameSession}
 
   @doc """
   """
   def main(_ \\ nil) do
-    Game.run()
+    GameSession.run()
   end
 end
