@@ -31,13 +31,40 @@ defmodule CoinFlipCommandLineGame.GameSession do
     loop(new_state)
   end
 
+  defp loop(%{game: %Game{game_state: :terminating} = game} = state) do
+    Logger.debug("Terminating game: " <> inspect(game))
+    state
+  end
+
+  @timeout 30_000
   defp loop(%{game: %Game{} = game, screen: screen} = state) do
     Logger.debug("Normal loop: " <> inspect(game))
     screen.render(game)
-    state
+
+    receive do
+      {:key_pressed, key} ->
+        Logger.debug("Key pressed: " <> inspect(key))
+        handle_key_press(state, key)
+        |> loop()
+      msg ->
+        Logger.debug("Received unhandled message: " <> inspect(msg))
+        loop(state)
+    after
+      @timeout -> state
+    end
   end
 
   defp teardown(state) do
     Logger.debug("Tearing down: " <> inspect(state))
+  end
+
+  defp handle_key_press(%{game: %Game{} = game, screen: _screen} = state, ?\n) do
+    new_game = Game.execute_buffer(game)
+    Map.put(state, :game, new_game)
+  end
+
+  defp handle_key_press(%{game: %Game{} = game, screen: _screen} = state, key) when is_integer(key) do
+    new_game = Game.append_to_buffer(game, to_string([key]))
+    Map.put(state, :game, new_game)
   end
 end

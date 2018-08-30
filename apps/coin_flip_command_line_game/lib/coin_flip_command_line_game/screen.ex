@@ -23,7 +23,7 @@ defmodule CoinFlipCommandLineGame.Screen do
 
   defp new_display(), do: "CoinFlipCommandLineGame"
 
-  def update_game(%Screen{}, %Game{}) do
-    Screen.new()
+  def update_game(%Screen{} = screen, %Game{user_buffer: game_user_buffer}) do
+    Map.put(screen, :user_buffer, game_user_buffer)
   end
 end

@@ -20,11 +20,13 @@ defmodule CoinFlipCommandLineGame.ScreenServer do
     GenServer.cast(__MODULE__, {:render, game})
   end
 
-  def handle_cast({:render, %Game{} = game}, %{screen: %Screen{printer: printer} = screen}) do
+  def handle_cast({:render, %Game{} = game}, %{screen: %Screen{printer: printer} = screen} = state) do
     new_screen = Screen.update_game(screen, game)
     printer.print_full_screen(new_screen)
 
-    {:noreply, new_screen}
+    new_state = Map.put(state, screen, new_screen)
+
+    {:noreply, new_state}
   end
 
   def handle_info({:ex_ncurses, :key, key}, state) do

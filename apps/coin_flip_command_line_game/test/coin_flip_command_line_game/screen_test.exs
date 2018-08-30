@@ -2,7 +2,7 @@ defmodule CoinFLipCommandLineGameScreenTest do
   use ExUnit.Case
   doctest CoinFlipCommandLineGame.Screen
 
-  alias CoinFlipCommandLineGame.{Game, Screen}
+  alias CoinFlipCommandLineGame.Screen
 
   describe "prompt" do
     test "has a default prompt" do
